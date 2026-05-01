@@ -1,0 +1,7 @@
+{
+  "defaultProvider": "llama-cpp",
+  "defaultModel": "qwen3.5",
+  "autocompleteMaxVisible": 7,
+  "defaultThinkingLevel": "off",
+  "lastChangelogVersion": "0.70.6"
+}

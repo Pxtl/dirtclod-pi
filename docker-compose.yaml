@@ -1,0 +1,138 @@
+services:
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+    entrypoint: ["/bin/sh","-c"]
+    # TODO: This didn't seem to work, had to docker exec it.
+    command: >
+      ollama pull qwen3.5
+      && ollama serve
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: docker.io/ollama/ollama:latest
+    ports:
+      - 7869:11434
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    networks:
+      - pxtl-clod-net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all 
+              capabilities: [gpu]
+
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ollama-webui
+    depends_on:
+      - ollama
+    ports:
+      - 8080:8080
+    environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
+      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
+      - ENV=dev
+      - WEBUI_AUTH=False
+      - WEBUI_NAME=valiantlynx AI
+      - WEBUI_URL=http://localhost:8080
+      - WEBUI_SECRET_KEY=t0p-s3cr3t
+      - NO_PROXY=host.docker.internal
+    volumes:
+      - webui-data:/app/backend/data
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - pxtl-clod-net
+
+  pi-agent:
+    image: local/pi-coding-agent:latest
+    container_name: pi-agent
+    tty: true
+    stdin_open: true
+    environment:
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
+      - PARANOID_MODE=${PARANOID_MODE:-true}
+      - GIT_AUTHOR_NAME=${GIT_NAME}
+      - GIT_AUTHOR_EMAIL=${GIT_EMAIL}
+      - GIT_COMMITTER_NAME=${GIT_NAME}
+      - GIT_COMMITTER_EMAIL=${GIT_EMAIL}
+      - GIT_CONFIG_COUNT=2
+      - GIT_CONFIG_KEY_0=user.signingkey
+      - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
+      - GIT_CONFIG_KEY_1=commit.gpgsign
+      - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
+    secrets:
+      - source: github_token
+        target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
+    volumes:
+      - workspace:/workspace
+      - pi-data:/home/node/.pi
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nodev,nosuid,mode=1777
+      - /home/node/.config:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
+      - /home/node/.npm:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
+    pids_limit: 150
+    networks:
+      - pxtl-clod-net
+    restart: unless-stopped
+
+  ssh-agent:
+    container_name: ssh-agent
+    image: docksal/ssh-agent
+    volumes:
+      - ~/.ssh:/root/ssh
+    networks:
+      - pxtl-clod-net
+    restart: unless-stopped
+
+volumes:
+  ollama:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/rw/ollama
+
+  webui-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/rw/webui
+
+  pi-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/submodule/pi-coding-agent/.pi-data
+
+  workspace:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/rw/workspace
+
+  ssh:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ~/.ssh
+
+networks:
+  pxtl-clod-net:
+    driver: bridge
+
+secrets:
+  github_token:
+    file: ${PWD}/submodule/pi-coding-agent/.secrets/github_token.txt

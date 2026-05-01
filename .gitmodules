@@ -1,0 +1,6 @@
+[submodule "submodule/pi-coding-agent"]
+	path = submodule/pi-coding-agent
+	url = https://github.com/gni/pi-coding-agent-container.git
+[submodule "submodule/open-webui"]
+	path = submodule/open-webui
+	url = https://github.com/open-webui/open-webui.git
