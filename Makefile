@@ -20,13 +20,10 @@ build-pi-agent: init-submodules
 	&& make setup \
 	&& docker compose --env-file $(ROOT_DIR)/.env build
 
-# build-ssh-agent:
-# 	docker build dirtclod-ssh-agent -t local/dirtclod-ssh-agent:latest
-
 init-pi-agent: build-pi-agent
 	@bash ./init-pi-agent-settings.sh
 
-build: init-pi-agent #build-ssh-agent
+build: init-pi-agent
 	docker compose build
 
 # Start the full stack (ensures network and builds agent first)

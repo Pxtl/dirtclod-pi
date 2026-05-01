@@ -67,15 +67,12 @@ services:
       - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
       - GIT_CONFIG_KEY_1=commit.gpgsign
       - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
-      - SSH_AUTH_SOCK=/.ssh-agent/proxy-socket
     secrets:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
     volumes:
       - workspace:/workspace
       - pi-data:/home/node/.pi
-    # volumes_from:
-    #   - ssh-agent
     user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     #DEBUG
     # read_only: true
@@ -87,17 +84,6 @@ services:
     networks:
       - dirtclod-net
     restart: unless-stopped
-
-  # ssh-agent:
-  #   container_name: ssh-agent
-  #   image: local/dirtclod-ssh-agent:latest
-  #   ports:
-  #     - 2222:22
-  #   volumes:
-  #     - ssh:/root/.ssh:ro
-  #   networks:
-  #     - dirtclod-net
-  #   restart: unless-stopped
 
 volumes:
   ollama:
