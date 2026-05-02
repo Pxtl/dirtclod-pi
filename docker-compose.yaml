@@ -1,9 +1,9 @@
 services:
   ollama:
     volumes:
-      - ollama:/root/.ollama
+      - ./volumes/rw/ollama:/root/.ollama
     entrypoint: ["/bin/sh","-c"]
-    # TODO: This didn't seem to work, had to docker exec it.
+    # # TODO: This didn't seem to work, had to docker exec it.
     command: >
       ollama pull qwen3.5
       && ollama serve
@@ -42,9 +42,21 @@ services:
       - WEBUI_SECRET_KEY=t0p-s3cr3t
       - NO_PROXY=host.docker.internal
     volumes:
-      - webui-data:/app/backend/data
+      - ./volumes/rw/webui:/app/backend/data
     extra_hosts:
       - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - dirtclod-net
+
+  ssh-mitm:
+    build: ./ssh-mitm-docker
+    container_name: ssh-mitm
+    ports:
+      - "2222:22"
+    volumes:
+      - ./volumes/ro/ssh-mitm-ssh:/root/ssh-mitm-ssh:ro
+      - ./volumes/ro/ssh-pi-agent:/root/ssh-pi-agent:ro
     restart: unless-stopped
     networks:
       - dirtclod-net
@@ -52,6 +64,8 @@ services:
   pi-agent:
     image: local/pi-coding-agent:latest
     container_name: pi-agent
+    depends_on:
+      - ssh-mitm
     tty: true
     stdin_open: true
     environment:
@@ -71,8 +85,9 @@ services:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
     volumes:
-      - workspace:/workspace
-      - pi-data:/home/node/.pi
+      - ./volumes/rw/workspace:/workspace
+      - ./submodule/pi-coding-agent/.pi-data:/home/node/.pi
+      - ./volumes/ro/ssh-pi-agent:/home/node/.ssh
     user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     #DEBUG
     # read_only: true
@@ -85,41 +100,6 @@ services:
       - dirtclod-net
     restart: unless-stopped
 
-volumes:
-  ollama:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/volumes/rw/ollama
-
-  webui-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/volumes/rw/webui
-
-  pi-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/submodule/pi-coding-agent/.pi-data
-
-  workspace:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/volumes/rw/workspace
-
-  ssh:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/volumes/ro/ssh
 networks:
   dirtclod-net:
     driver: bridge

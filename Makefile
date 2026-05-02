@@ -1,12 +1,17 @@
 # Makefile for dirtclod-pi docker
 
-.PHONY: help init-submodules build-pi-agent build init-pi-agent compose-up compose-down clean
+.PHONY: help init-submodules init-ssh-mitm build-pi-agent build init-pi-agent compose-up compose-down clean
 .DEFAULT_GOAL := build
 
 # Use this project name for tagging/pushing images
 PROJECT_NAME := dirtclod-pi
 AGENT_IMAGE := ghcr.io/$(shell whoami)/$(PROJECT_NAME)-pi-agent:local
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+# Load .env file if it exists
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
 
 help:
 	@echo "usage: make [target]"
@@ -23,7 +28,10 @@ build-pi-agent: init-submodules
 init-pi-agent: build-pi-agent
 	@bash ./init-pi-agent-settings.sh
 
-build: init-pi-agent
+init-ssh-mitm:
+	@bash ./ssh-mitm-docker/init-ssh-mitm-volumes.sh $(SSH_MITM_DEST_HOST)
+
+build: init-pi-agent init-ssh-mitm
 	docker compose build
 
 # Start the full stack (ensures network and builds agent first)
