@@ -62,7 +62,7 @@ services:
       - dirtclod-net
 
   pi-agent:
-    image: local/pi-coding-agent:latest
+    build: ./pi-coding-agent-docker
     container_name: pi-agent
     depends_on:
       - ssh-mitm
