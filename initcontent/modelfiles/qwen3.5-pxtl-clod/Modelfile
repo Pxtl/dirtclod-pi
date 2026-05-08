@@ -1,0 +1,13 @@
+# Set the base model
+FROM qwen3.5:latest
+
+# Set parameters for coding optimization.  Picked arbitrarily from guides online
+# recommending how to configure a coding agent.
+PARAMETER temperature 0.6
+PARAMETER top_k 20
+PARAMETER top_p 0.95
+PARAMETER repeat_penalty 1.0
+
+# Increase context window for large projects (if hardware allows).  64k was
+# generally recommended online as good compromise level for qwen3.5.
+PARAMETER num_ctx 65536
