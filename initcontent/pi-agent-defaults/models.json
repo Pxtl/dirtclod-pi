@@ -5,9 +5,17 @@
       "api": "openai-completions",
       "apiKey": "ollama",
       "models": [
-        { "id": "qwen3.5" },
-        { "id": "qwen3.5-dirtclod-agent" },
-        { "id": "qwen3.5-dirtclod-autocomplete" }
+        { 
+          "id": "qwen3.5"
+        },
+        { 
+          "id": "qwen3.5-dirtclod-agent",
+          "contextWindow": 65536
+        },
+        { 
+          "id": "qwen3.5-dirtclod-autocomplete",
+          "contextWindow": 8192
+        }
       ]
     }
   }
