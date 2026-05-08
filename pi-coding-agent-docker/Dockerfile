@@ -14,7 +14,8 @@ RUN mkdir -p /home/node/.npm-global/bin \
     && mkdir -p /home/node/.npm-global/lib/node_modules/@earendil-works \
     && mv /usr/local/lib/node_modules/@earendil-works/pi-coding-agent /home/node/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent \
     && chown -R node:node /home/node/.npm-global \
-    && ln -s /home/node/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js /home/node/.npm-global/bin/pi
+    && ln -s /home/node/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js /home/node/.npm-global/bin/pi \
+    && ln -s /home/node/.npm-global/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js /usr/bin/pi
 
 USER node
 
