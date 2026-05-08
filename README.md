@@ -31,6 +31,8 @@ Models can be customized in the Ollama volume in
 `./volumes/rw/ollama/modelfiles`.  The entrypoint script will automatically name
 the model after the directory containing the `Modelfile`.
 
+Within the `dirtclod-net` network, Ollama is hosted on 11434.  But on your host's port it is bound to the .env var `OLLAMA_PUBLIC_PORT`, defaulting to 11434.
+
 ### pi-coding-agent
 Uses
 [pi-coding-agent-container](https://github.com/gni/pi-coding-agent-container)
