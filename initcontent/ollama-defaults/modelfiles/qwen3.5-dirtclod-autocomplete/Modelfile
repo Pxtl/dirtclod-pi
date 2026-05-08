@@ -1,0 +1,7 @@
+# Set the base model
+FROM qwen3.5:2b
+
+# Set parameters for coding optimization.  Picked arbitrarily from guides online
+# recommending how to configure a coding autocomplete.
+PARAMETER temperature 0.3
+PARAMETER num_ctx 8192

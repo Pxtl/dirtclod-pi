@@ -2,11 +2,8 @@ services:
   ollama:
     volumes:
       - ./volumes/rw/ollama:/root/.ollama
-    entrypoint: ["/bin/sh","-c"]
-    # # TODO: This didn't seem to work, had to docker exec it.
-    command: >
-      ollama pull qwen3.5
-      && ollama serve
+    entrypoint: ["/root/.ollama/entrypoint.sh"]
+    command: []
     container_name: ollama
     pull_policy: always
     tty: true
@@ -16,6 +13,7 @@ services:
       - 7869:11434
     environment:
       - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_LOAD_TIMEOUT=60s
     networks:
       - dirtclod-net
     deploy:
