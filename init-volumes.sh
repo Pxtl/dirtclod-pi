@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Deploy the standard config values into pi-coding-agent volume and ollama
-# volume
+# volume.  Use -f to force ollama init.  Pi init must be done manually because
+# that's more destructive.
 #
 # Usage: ./init-volumes.sh [-f]
 
