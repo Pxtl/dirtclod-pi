@@ -12,7 +12,7 @@ guarantees.
 The intent is that you can pull down this project and `make compose-up` it and
 get a working coding agent.  Connect to the agent with:
 
-`docker exec -it pi-agent pi`
+`docker exec -it dirtclod-pi pi`
 
 While `dirtclod-pi` initializes the agent and ollama server with expected
 startup config (see `./initcontent`), you are free to customize those afterwards.
