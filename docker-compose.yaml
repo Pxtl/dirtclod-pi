@@ -52,14 +52,14 @@ services:
     container_name: dirtclod-sshitmaids
     environment:
       - SSHITMAIDS_DEST=${SSHITMAIDS_DEST:-git@github.com:22}
-      - SSHITMAIDS_PORT=${SSHITMAIDS_PORT:-2222}
+      - SSHITMAIDS_PUBLIC_PORT=${SSHITMAIDS_PUBLIC_PORT:-2222}
       - SSHITMAIDS_GENERATE_CLIENT_CONFIG=${SSHITMAIDS_GENERATE_CLIENT_CONFIG:-false}
       - SSHITMAIDS_CLIENT_DEST=${SSHITMAIDS_CLIENT_DEST:-git@sshitmaids:22}
       - SSHITMAIDS_DO_KEYSCAN=${SSHITMAIDS_DO_KEYSCAN:-false}
     #debug
     read_only: false
     ports:
-      - "$SSHITMAIDS_PORT:22"
+      - "$SSHITMAIDS_PUBLIC_PORT:22"
     volumes:
       - ./volumes/ro/sshitmaids:/root/sshitmaids
       - ./volumes/ro/ssh-client:/root/ssh-client
