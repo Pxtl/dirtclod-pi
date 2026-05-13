@@ -23,6 +23,8 @@ into the volumes.
 ## Components
 
 ### Ollama
+Runs as container "dirtclod-ollama" for service "ollama".
+
 The stack uses Ollama for local LLM hosting, and attempts to install Qwen3.5 by
 default.
 
@@ -31,9 +33,11 @@ Models can be customized in the Ollama volume in
 `./volumes/rw/ollama/modelfiles`.  The entrypoint script will automatically name
 the model after the directory containing the `Modelfile`.
 
-Within the `dirtclod-net` network, Ollama is hosted on 11434.  But on your host's port it is bound to the .env var `OLLAMA_PUBLIC_PORT`, defaulting to 11434.
+Within the `dirtclod-net` network, Ollama is hosted on 11434.  But on your host's port it is bound to the .env var `OLLAMA_PUBLIC_PORT`, defaulting to 11434.   If you change this port in .ENV you will need to update your pi agent settings.json.
 
 ### pi-coding-agent
+Runs container "dirtclod-pi" for service "pi-coding-agent"
+
 Uses
 [pi-coding-agent-container](https://github.com/gni/pi-coding-agent-container)
 for secure dockerized pi coding agent.
@@ -44,12 +48,21 @@ Pi agent configuration is unfortunately stored deep in a submodule's volumes:
 prompt and **Pi coding agent** settings and system prompt.  Getting this to a
 more user-friendly path is TODO.
 
-### ssh-mitm
+#### Notes
+Custom apt dependencies are added in `./pi-coding-agent-docker/Dockerfile`.  At
+time of writing latest version of `pi-coding-agent-container` has a new
+dependency on a "zonzon" firewall container that does not seem portable to
+dirtbag.
+
+### sshitmaids
+Runs container "dirtclod-sshitmaids" for service "sshitmaids".
+
 SSH to github is handled by a proxy that keeps user's keys secret in the proxy
-server. This must be configured with the .env var `SSH_MITM_DEST_HOST`. Keys go
-in "volumes".  Further documentation details is TODO.
+server. See [sshitmaids](https://github.com/pxtl/sshitmaids)
 
 ### Open-WebUI
+Runs container "dirtclod-ollama-webui" for service "ollama-webui".
+
 Included just for fun, you can chat with the agent through there. 
 
 **WARNING: CONFIG OPTIONS AND WEIGHTS CHANGES IN GUI DO NOT APPEAR TO WORK FOR

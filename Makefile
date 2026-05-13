@@ -1,6 +1,6 @@
 # Makefile for dirtclod-pi docker
 
-.PHONY: help init-submodules init-ssh-mitm build-pi-agent build init-volumes force-init-volumes compose-up compose-down clean
+.PHONY: help init-submodules build-pi-agent build init-volumes force-init-volumes compose-up compose-down clean
 .DEFAULT_GOAL := build
 
 # Use this project name for tagging/pushing images
@@ -31,16 +31,13 @@ init-volumes: build-pi-agent
 force-init-volumes: build-pi-agent
 	@bash ./init-volumes.sh -f
 
-init-ssh-mitm:
-	@bash ./ssh-mitm-docker/init-ssh-mitm-volumes.sh $(SSH_MITM_DEST_HOST)
-
-build: init-volumes init-ssh-mitm
+build: init-volumes
 	docker compose build
 
 # Start the full stack (ensures network and builds agent first)
 compose-up: build
 	@echo "Starting stack with docker compose"
-	docker compose up -d
+	docker compose up -d --remove-orphans
 
 compose-down:
 	docker compose down

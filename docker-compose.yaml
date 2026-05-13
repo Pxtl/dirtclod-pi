@@ -4,7 +4,7 @@ services:
       - ./volumes/rw/ollama:/root/.ollama
     entrypoint: ["/root/.ollama/entrypoint.sh"]
     command: []
-    container_name: ollama
+    container_name: dirtclod-ollama
     pull_policy: always
     tty: true
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
 
   ollama-webui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: ollama-webui
+    container_name: dirtclod-ollama-webui
     depends_on:
       - ollama
     ports:
@@ -47,23 +47,31 @@ services:
     networks:
       - dirtclod-net
 
-  ssh-mitm:
-    build: ./ssh-mitm-docker
-    container_name: ssh-mitm
+  sshitmaids:
+    image: ghcr.io/pxtl/sshitmaids:latest
+    container_name: dirtclod-sshitmaids
+    environment:
+      - SSHITMAIDS_DEST=${SSHITMAIDS_DEST:-git@github.com:22}
+      - SSHITMAIDS_PORT=${SSHITMAIDS_PORT:-2222}
+      - SSHITMAIDS_GENERATE_CLIENT_CONFIG=${SSHITMAIDS_GENERATE_CLIENT_CONFIG:-false}
+      - SSHITMAIDS_CLIENT_DEST=${SSHITMAIDS_CLIENT_DEST:-git@sshitmaids:22}
+      - SSHITMAIDS_DO_KEYSCAN=${SSHITMAIDS_DO_KEYSCAN:-false}
+    #debug
+    read_only: false
     ports:
-      - "2222:22"
+      - "$SSHITMAIDS_PORT:22"
     volumes:
-      - ./volumes/ro/ssh-mitm-ssh:/root/ssh-mitm-ssh:ro
-      - ./volumes/ro/ssh-pi-agent:/root/ssh-pi-agent:ro
+      - ./volumes/ro/sshitmaids:/root/sshitmaids
+      - ./volumes/ro/ssh-client:/root/ssh-client
     restart: unless-stopped
     networks:
       - dirtclod-net
 
-  pi-agent:
+  pi-coding-agent:
     build: ./pi-coding-agent-docker
-    container_name: pi-agent
+    container_name: dirtclod-pi
     depends_on:
-      - ssh-mitm
+      - sshitmaids
     tty: true
     stdin_open: true
     environment:
@@ -85,7 +93,7 @@ services:
     volumes:
       - ./volumes/rw/workspace:/workspace
       - ./submodule/pi-coding-agent/.pi-data:/home/node/.pi
-      - ./volumes/ro/ssh-pi-agent:/home/node/.ssh
+      - ./volumes/ro/ssh-client:/home/node/.ssh
     user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     #DEBUG
     # read_only: true
