@@ -40,7 +40,7 @@ compose-up: build
 	docker compose up -d --remove-orphans
 
 compose-down:
-	docker compose down
+	docker compose down --remove-orphans
 
 clean: compose-down
 	@echo "Removing agent local image (if present)"

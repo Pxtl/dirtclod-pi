@@ -10,9 +10,14 @@ guarantees.
 ## Usage
 
 The intent is that you can pull down this project and `make compose-up` it and
-get a working coding agent.  Connect to the agent with:
+get a working coding agent.  The agent starts on docker start, and is available
+in a tmux session.
 
-`docker exec -it dirtclod-pi pi`
+Connect to the agent with:
+
+`docker exec -it tmux attach -t pi pi`
+
+Note that tmux will shut down the agent if you `exit`
 
 While `dirtclod-pi` initializes the agent and ollama server with expected
 startup config (see `./initcontent`), you are free to customize those afterwards.

@@ -28,9 +28,14 @@ RUN echo "export PATH=\"$HOME/.npm-global/bin:\$PATH\"" >> /home/node/.bashrc
 
 USER root
 
-# need OpenSSH to do git operations over SSH via the MITM server
+# need OpenSSH to do git operations over SSH via the MITM server, need tmux to
+# run pi in background
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    openssh-client
+    openssh-client \
+    tmux
+
+COPY entrypoint-tmux.sh /
+RUN chmod +x /entrypoint-tmux.sh
 
 ######################################################################
 #region install development dependencies needed to work on my projects
@@ -44,6 +49,9 @@ RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod
 #endregion install development dependencies needed to work on my projects
 ######################################################################
 
-ENTRYPOINT ["/bin/bash"]
+USER node
 
+RUN echo "set -g extended-keys on" >> /home/node/.tmux.conf
+
+ENTRYPOINT ["/entrypoint-tmux.sh"]
 CMD []
