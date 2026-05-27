@@ -34,6 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     tmux
 
+COPY .tmux.conf /home/node/.tmux.conf
+
 COPY entrypoint-tmux.sh /
 RUN chmod +x /entrypoint-tmux.sh
 
@@ -44,14 +46,17 @@ RUN chmod +x /entrypoint-tmux.sh
 RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
     && dpkg -i packages-microsoft-prod.deb \
     && apt-get update \
-    && apt-get install -y dotnet-sdk-10.0
+    && apt-get install -y dotnet-sdk-10.0 \
+    && dotnet workload update \
+    && echo "DOTNET_ROOT=/usr/lib/dotnet" >> /etc/environment
 
 #endregion install development dependencies needed to work on my projects
 ######################################################################
 
-USER node
+# final prep of userland
+RUN chown -R node:node /home/node
 
-RUN echo "set -g extended-keys on" >> /home/node/.tmux.conf
+USER node
 
 ENTRYPOINT ["/entrypoint-tmux.sh"]
 CMD []
