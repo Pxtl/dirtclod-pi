@@ -23,6 +23,8 @@ services:
             - driver: nvidia
               count: all 
               capabilities: [gpu]
+        limits:
+          memory: 16G
 
   ollama-webui:
     image: ghcr.io/open-webui/open-webui:main
@@ -102,6 +104,11 @@ services:
       - /home/node/.config:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
       - /home/node/.npm:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
     pids_limit: 150
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.25'     # Reserve 25% of a core
+          memory: 512M
     networks:
       - dirtclod-net
     restart: unless-stopped
