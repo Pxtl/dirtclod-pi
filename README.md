@@ -9,7 +9,7 @@ guarantees.
 
 ## Usage
 
-The intent is that you can pull down this project and `make compose-up` it and
+The intent is that you can pull down this project and `make up` it and
 get a working coding agent.  The agent starts on docker start, and is available
 in a tmux session.
 
