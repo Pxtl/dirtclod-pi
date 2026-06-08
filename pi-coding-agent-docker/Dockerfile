@@ -34,10 +34,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     tmux
 
+#tmux config
 COPY .tmux.conf /home/node/.tmux.conf
+ENV LANG=en_US.UTF-8
+ENV TERM=xterm-256color
 
 COPY entrypoint-tmux.sh /
 RUN chmod +x /entrypoint-tmux.sh
+    
 
 ######################################################################
 #region install development dependencies needed to work on my projects
