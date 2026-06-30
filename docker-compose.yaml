@@ -91,6 +91,9 @@ services:
       - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
       - GIT_CONFIG_KEY_1=commit.gpgsign
       - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
+      # On debian docker image the shared compilation VBCSCompiler seems to grow
+      # uncontrollably and OOM.
+      - UseSharedCompilation=false
     secrets:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}

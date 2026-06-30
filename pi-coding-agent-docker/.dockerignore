@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------
+# .NET Build and Output Artifacts
+# ---------------------------------------------------------------------
+# Exclude local compilation folders to prevent architecture mismatches This is
+# also ABSOLUTELY NECESSARY because it seems like obj and bin may cause
+# out-of-memory exceptions? I do not understand why and resent how much I've
+# already had to learn.
+**/obj/
+**/bin/
+
+# Exclude local publishing and packaging outputs
+**/publish/
+**/out/
+*.nupkg
+
+# ---------------------------------------------------------------------
+# IDE and Editor Configurations
+# ---------------------------------------------------------------------
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# Visual Studio Code files
+.vscode/
+!.vscode/extensions.json
+
+# Rider / IntelliJ files
+.idea/
+
+# ---------------------------------------------------------------------
+# Secrets, Environment Configuration, and Local Databases
+# ---------------------------------------------------------------------
+# Block local environment files and secrets
+.env
+.env.*
+appsettings.Development.json
+appsettings.Local.json
+
+# Avoid copying local SQLite or SQL Server databases
+*.db
+*.db-journal
+*.sqlite
+*.mdf
+*.ldf
+
+# ---------------------------------------------------------------------
+# Version Control and OS Artifacts
+# ---------------------------------------------------------------------
+.git
+.gitignore
+.gitattributes
+.DS_Store
+Thumbs.db

@@ -54,6 +54,10 @@ RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod
     && dotnet workload update \
     && echo "DOTNET_ROOT=/usr/lib/dotnet" >> /etc/environment
 
+# On debian docker image the shared compilation VBCSCompiler seems to grow
+# uncontrollably and OOM. I do not understand it and do not want to.
+ENV UseSharedCompilation=false
+
 #endregion install development dependencies needed to work on my projects
 ######################################################################
 
