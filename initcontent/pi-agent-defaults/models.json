@@ -15,6 +15,10 @@
         { 
           "id": "qwen3.5-dirtclod-autocomplete",
           "contextWindow": 8192
+        },
+        { 
+          "id": "qwen3.6-dirtclod-agent",
+          "contextWindow": 32768
         }
       ]
     }

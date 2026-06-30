@@ -12,6 +12,9 @@ echo "Ollama is ready!"
 echo "2. Pulling qwen3.5 as default image if not done already..."
 ollama pull qwen3.5
 
+echo "2a. Pulling qwen3.6 as possible upgrade image if not done already..."
+ollama pull qwen3.6:27b-q4_K_M
+
 echo "3. Creating dirtclod models...."
 modelfiles_dir="$HOME/.ollama/modelfiles"
 
