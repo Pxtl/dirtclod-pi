@@ -12,10 +12,11 @@ services:
     ports:
       - ${OLLAMA_PUBLIC_PORT:-11434}:11434
     environment:
+      - OLLAMA_DEBUG=1
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_LOAD_TIMEOUT=60s
-      # reserve 3GB of GPU for OS
-      - OLLAMA_GPU_OVERHEAD=3221225472
+      # reserve bytes of GPU for OS
+      - OLLAMA_GPU_OVERHEAD=536870912
     networks:
       - dirtclod-net
     deploy:
@@ -36,7 +37,7 @@ services:
     ports:
       - 8080:8080
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OLLAMA_BASE_URLS=http://host.docker.internal:${OLLAMA_PUBLIC_PORT:-11434} #comma separated ollama hosts
+      - OLLAMA_BASE_URLS=http://host.docker.internal:${OLLAMA_PUBLIC_PORT:-11434} # comma separated ollama hosts
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
@@ -91,29 +92,20 @@ services:
       - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
       - GIT_CONFIG_KEY_1=commit.gpgsign
       - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
-      # On debian docker image the shared compilation VBCSCompiler seems to grow
-      # uncontrollably and OOM.
-      - UseSharedCompilation=false
     secrets:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
     volumes:
       - ./volumes/rw/workspace:/workspace
-      - ./submodule/pi-coding-agent/.pi-data:/home/node/.pi
-      - ./volumes/ro/ssh-client:/home/node/.ssh
+      - ./volumes/rw/pi-coding-agent/.pi-data:/home/agentclod/.pi
+      - ./volumes/ro/ssh-client:/home/agentclod/.ssh
     user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     #DEBUG
     # read_only: true
     tmpfs:
       - /tmp:noexec,nodev,nosuid,mode=1777
-      - /home/node/.config:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
-      - /home/node/.npm:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
-    pids_limit: 150
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.25'     # Reserve 25% of a core
-          memory: 512M
+      - /home/agentclod/.config:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
+      - /home/agentclod/.npm:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
     networks:
       - dirtclod-net
     restart: unless-stopped
@@ -124,4 +116,4 @@ networks:
 
 secrets:
   github_token:
-    file: ${PWD}/submodule/pi-coding-agent/.secrets/github_token.txt
+    file: ${PWD}/volumes/rw/pi-coding-agent/.secrets/github_token.txt

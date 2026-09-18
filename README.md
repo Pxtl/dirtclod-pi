@@ -19,7 +19,7 @@ Connect to the agent with:
 
 Note that tmux will shut down the agent if you `exit`
 
-While `dirtclod-pi` initializes the agent and ollama server with expected
+While `dirtclod-pi` initializes the agent and Ollama server with expected
 startup config (see `./initcontent`), you are free to customize those afterwards.
 Use the `make force-init-volumes` to re-import the default settings.  Note that
 this will not delete any custom things you have added, just re-copy the files
@@ -43,21 +43,9 @@ Within the `dirtclod-net` network, Ollama is hosted on 11434.  But on your host'
 ### pi-coding-agent
 Runs container "dirtclod-pi" for service "pi-coding-agent"
 
-Uses
-[pi-coding-agent-container](https://github.com/gni/pi-coding-agent-container)
-for secure dockerized pi coding agent.
-
 #### Configuration
-Pi agent configuration is unfortunately stored deep in a submodule's volumes:
-`./submodule/pi-coding-agent/.pi-data/agent`.  There you'll find the system
-prompt and **Pi coding agent** settings and system prompt.  Getting this to a
-more user-friendly path is TODO.
-
-#### Notes
-Custom apt dependencies are added in `./pi-coding-agent-docker/Dockerfile`.  At
-time of writing latest version of `pi-coding-agent-container` has a new
-dependency on a "zonzon" firewall container that does not seem portable to
-dirtbag.
+Pi agent configuration is stored in `./volumes/rw/pi-coding-agent/.pi-data/agent`.
+There you'll find the system prompt and **Pi coding agent** settings and system prompt.
 
 ### sshitmaids
 Runs container "dirtclod-sshitmaids" for service "sshitmaids".
@@ -68,9 +56,8 @@ server. See [sshitmaids](https://github.com/pxtl/sshitmaids)
 ### Open-WebUI
 Runs container "dirtclod-ollama-webui" for service "ollama-webui".
 
-Included just for fun, you can chat with the agent through there. 
+Included just for fun, you can chat with the agent through there.
 
-**WARNING: CONFIG OPTIONS AND WEIGHTS CHANGES IN GUI DO NOT APPEAR TO WORK FOR
-PI CODING AGENT.**
+**WARNING: CONFIG OPTIONS AND WEIGHTS CHANGES IN GUI DO NOT APPEAR TO WORK FOR OLLAMA.**
 
 To set custom config options and weights, you will have to make a custom model.

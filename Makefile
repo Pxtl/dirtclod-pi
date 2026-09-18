@@ -19,16 +19,10 @@ help:
 init-submodules:
 	git submodule update --init --recursive
 
-build-pi-agent: init-submodules
-	@echo "Building pi-coding-agent from submodule/pi-coding-agent"
-	@cd submodule/pi-coding-agent \
-	&& make setup \
-	&& docker compose --env-file $(ROOT_DIR)/.env build
-
-init-volumes: build-pi-agent
+init-volumes: init-submodules
 	@bash ./init-volumes.sh
 
-force-init-volumes: build-pi-agent
+force-init-volumes: init-submodules
 	@bash ./init-volumes.sh -f
 
 build: init-volumes

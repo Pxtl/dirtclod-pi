@@ -1,5 +1,5 @@
 # Set the base model
-FROM qwen3.5:2b
+FROM qwen2.5-coder:1.5b
 
 # Set parameters for coding optimization.  Picked arbitrarily from guides online
 # recommending how to configure a coding autocomplete.

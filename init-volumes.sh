@@ -25,7 +25,7 @@ done
 
 echo "Setting up pi-coding-agent volume"
 src_dir_pi="$script_dir/initcontent/pi-agent-defaults"
-target_dir_pi="$script_dir/submodule/pi-coding-agent/.pi-data/agent"
+target_dir_pi="$script_dir/volumes/rw/pi-coding-agent/.pi-data/agent"
 
 # Create target directory
 mkdir -p "$target_dir_pi"

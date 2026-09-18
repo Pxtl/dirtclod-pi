@@ -4,6 +4,9 @@
       "baseUrl": "http://ollama:11434/v1",
       "api": "openai-completions",
       "apiKey": "ollama",
+      "compat": {
+        "supportsReasoningEffort": true
+      },
       "models": [
         { 
           "id": "qwen3.5"
@@ -13,13 +16,22 @@
           "contextWindow": 98304
         },
         { 
-          "id": "qwen3.5-dirtclod-autocomplete",
+          "id": "qwen2.5-dirtclod-autocomplete",
           "contextWindow": 8192
         },
         { 
-          "id": "qwen3.6-dirtclod-agent",
-          "contextWindow": 32768
-        }
+          "id": "qwen3.8-dirtclod-agent",
+          "contextWindow": 34816,
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": null
+          }
+        },
       ]
     }
   }

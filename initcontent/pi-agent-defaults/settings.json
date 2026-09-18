@@ -2,6 +2,20 @@
   "defaultProvider": "llama-cpp",
   "defaultModel": "qwen3.5-dirtclod-agent",
   "autocompleteMaxVisible": 7,
-  "defaultThinkingLevel": "off",
-  "lastChangelogVersion": "0.70.6"
+  "defaultThinkingLevel": "medium",
+  "lastChangelogVersion": "0.85.1",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 8192,
+    "keepRecentTokens": 12288
+  },
+  "thinkingBudgets": {
+    "minimal": 1024,
+    "low": 2048,
+    "medium": 4096,
+    "high": 8192,
+    "xhigh": 16384
+  },
+  "hideThinkingBlock": false,
+  "theme": "dark"
 }

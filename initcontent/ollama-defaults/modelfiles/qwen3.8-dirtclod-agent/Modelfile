@@ -1,5 +1,5 @@
 # Set the base model
-FROM qwen3.6:27b-q4_K_M 
+FROM batiai/qwen3.8-27b:iq3
 
 # Set parameters for coding optimization.  Picked arbitrarily from guides online
 # recommending how to configure a coding agent.
@@ -9,7 +9,6 @@ PARAMETER top_p 0.95
 PARAMETER repeat_penalty 1.0
 
 # Increase context window for large projects (if hardware allows).  64k was
-# generally recommended online as good compromise level for qwen3.5.  Raising to
-# 98304 because of depletion.
+# generally recommended online as good compromise level for qwen3.5.
 
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 34816
