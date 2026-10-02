@@ -1,7 +1,7 @@
 services:
   ollama:
     volumes:
-      - ./volumes/rw/ollama:/root/.ollama
+      - ./volumes/ollama:/root/.ollama
     entrypoint: ["/root/.ollama/entrypoint.sh"]
     command: []
     container_name: dirtclod-ollama
@@ -45,7 +45,7 @@ services:
       - WEBUI_SECRET_KEY=t0p-s3cr3t
       - NO_PROXY=host.docker.internal
     volumes:
-      - ./volumes/rw/webui:/app/backend/data
+      - ./volumes/webui:/app/backend/data
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
@@ -57,17 +57,16 @@ services:
     container_name: dirtclod-sshitmaids
     environment:
       - SSHITMAIDS_DEST=${SSHITMAIDS_DEST:-git@github.com:22}
-      - SSHITMAIDS_PUBLIC_PORT=${SSHITMAIDS_PUBLIC_PORT:-2222}
-      - SSHITMAIDS_GENERATE_CLIENT_CONFIG=${SSHITMAIDS_GENERATE_CLIENT_CONFIG:-false}
-      - SSHITMAIDS_CLIENT_DEST=${SSHITMAIDS_CLIENT_DEST:-git@sshitmaids:22}
-      - SSHITMAIDS_DO_KEYSCAN=${SSHITMAIDS_DO_KEYSCAN:-false}
+      - GENERATE_CLIENT_CONFIG=${SSHITMAIDS_GENERATE_CLIENT_CONFIG:-true}
+      - CLIENT_DEST=${SSHITMAIDS_CLIENT_DEST:-git@sshitmaids:22}
+      - DO_KEYSCAN=${SSHITMAIDS_DO_KEYSCAN:-false}
     #debug
     read_only: false
     ports:
-      - "$SSHITMAIDS_PUBLIC_PORT:22"
+      - "${SSHITMAIDS_PUBLIC_PORT:-2222}:22"
     volumes:
-      - ./volumes/ro/sshitmaids:/root/sshitmaids
-      - ./volumes/ro/ssh-client:/root/ssh-client
+      - ./volumes/sshitmaids:/root/sshitmaids
+      - ./volumes/ssh-client:/root/ssh-client
     restart: unless-stopped
     networks:
       - dirtclod-net
@@ -80,9 +79,6 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - HOST_UID=${HOST_UID:-1000}
-      - HOST_GID=${HOST_GID:-1000}
-      - PARANOID_MODE=${PARANOID_MODE:-true}
       - GIT_AUTHOR_NAME=${GIT_NAME}
       - GIT_AUTHOR_EMAIL=${GIT_EMAIL}
       - GIT_COMMITTER_NAME=${GIT_NAME}
@@ -96,16 +92,16 @@ services:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
     volumes:
-      - ./volumes/rw/workspace:/workspace
-      - ./volumes/rw/pi-coding-agent/.pi-data:/home/agentclod/.pi
-      - ./volumes/ro/ssh-client:/home/agentclod/.ssh
-    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+      - ./volumes/workspace:/workspace
+      - ./volumes/pi-coding-agent/.pi-data:/home/agentclod/.pi
+      - ./volumes/pi-coding-agent/.config:/home/agentclod/.config
+      - ./volumes/pi-coding-agent/.npm:/home/agentclod/.npm
+      - ./volumes/pi-coding-agent/.ssh:/home/agentclod/.ssh
+    user: "${AGENT_UID:-1000}:${AGENT_GID:-1000}"
     #DEBUG
     # read_only: true
     tmpfs:
       - /tmp:noexec,nodev,nosuid,mode=1777
-      - /home/agentclod/.config:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
-      - /home/agentclod/.npm:uid=${HOST_UID:-1000},gid=${HOST_GID:-1000},mode=700,noexec,nodev,nosuid
     networks:
       - dirtclod-net
     restart: unless-stopped
@@ -116,4 +112,4 @@ networks:
 
 secrets:
   github_token:
-    file: ${PWD}/volumes/rw/pi-coding-agent/.secrets/github_token.txt
+    file: ${PWD}/volumes/pi-coding-agent/.secrets/github_token.txt

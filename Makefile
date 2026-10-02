@@ -32,6 +32,7 @@ build: init-volumes
 up: build
 	@echo "Starting stack with docker compose"
 	docker compose up -d --remove-orphans
+	@bash ./init-pi-ssh.sh
 
 down:
 	docker compose down --remove-orphans
