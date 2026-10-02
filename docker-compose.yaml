@@ -88,6 +88,23 @@ services:
       - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
       - GIT_CONFIG_KEY_1=commit.gpgsign
       - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
+      # provider specific API keys, as many as practical included here so user
+      # doesn't have to customize the docker-compose.  You can replace all of
+      # these with only the ones you actually use
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - CO_API_KEY=${CO_API_KEY:-}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - GREENPT_API_KEY=${GREENPT_API_KEY:-}
+
     secrets:
       - source: github_token
         target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
