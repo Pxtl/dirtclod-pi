@@ -12,16 +12,16 @@
           "id": "qwen3.5"
         },
         { 
-          "id": "qwen3.5-dirtclod-agent",
+          "id": "qwen-12vram-dirtclod-agent",
           "contextWindow": 98304
         },
         { 
-          "id": "qwen2.5-dirtclod-autocomplete",
+          "id": "qwen-dirtclod-autocomplete",
           "contextWindow": 8192
         },
         { 
-          "id": "qwen3.8-dirtclod-agent",
-          "contextWindow": 34816,
+          "id": "qwen-20vram-dirtclod-agent",
+          "contextWindow": 49152,
           "reasoning": true,
           "thinkingLevelMap": {
             "minimal": null,

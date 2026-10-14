@@ -1,6 +1,6 @@
 {
   "defaultProvider": "llama-cpp",
-  "defaultModel": "qwen3.5-dirtclod-agent",
+  "defaultModel": "qwen-12vram-dirtclod-agent",
   "autocompleteMaxVisible": 7,
   "defaultThinkingLevel": "medium",
   "lastChangelogVersion": "0.85.1",

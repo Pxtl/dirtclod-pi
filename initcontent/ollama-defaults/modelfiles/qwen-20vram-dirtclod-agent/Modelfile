@@ -11,4 +11,4 @@ PARAMETER repeat_penalty 1.0
 # Increase context window for large projects (if hardware allows).  64k was
 # generally recommended online as good compromise level for qwen3.5.
 
-PARAMETER num_ctx 34816
+PARAMETER num_ctx 49152
