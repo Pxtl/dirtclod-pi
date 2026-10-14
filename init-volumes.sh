@@ -51,7 +51,6 @@ if docker info 2>/dev/null | grep -q 'run/user/.*/podman/podman.sock'; then
   podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.config"
   podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.npm"
   podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.pi-data"
-  podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.secrets"
   #not .ssh
   podman unshare chmod -R g+rwX "$script_dir/volumes/pi-coding-agent"
   podman unshare find "$script_dir/volumes/pi-coding-agent" -type d -exec chmod g+s {} +

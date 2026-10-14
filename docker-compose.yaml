@@ -111,9 +111,6 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - GREENPT_API_KEY=${GREENPT_API_KEY:-}
 
-    secrets:
-      - source: github_token
-        target: ${SECRET_TARGET_PATH:-/run/secrets/gh_default}
     volumes:
       - ./volumes/workspace:/workspace
       - ./volumes/pi-coding-agent/.pi-data:/home/agentclod/.pi
@@ -132,7 +129,3 @@ services:
 networks:
   dirtclod-net:
     driver: bridge
-
-secrets:
-  github_token:
-    file: ${PWD}/volumes/pi-coding-agent/.secrets/github_token.txt
