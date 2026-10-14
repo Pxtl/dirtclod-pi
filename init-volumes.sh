@@ -16,10 +16,10 @@ print_usage() {
   printf "Usage: ./init-volumes.sh [-f]"
 }
 
-FORCE_OLLAMA_INIT=''
+force_ollama_init=''
 while getopts 'f' flag; do
   case "${flag}" in
-    f) FORCE_OLLAMA_INIT='true' ;;
+    f) force_ollama_init='true' ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -64,20 +64,20 @@ else
   echo "Not rootless Podman — skipping uid-mapping fix (not needed on Docker)"
 fi
 
-echo "Setting up ollama volume (FORCE_OLLAMA_INIT = $FORCE_OLLAMA_INIT)"
+echo "Setting up ollama volume (force_ollama_init = $force_ollama_init)"
 src_dir_ollama="$script_dir/initcontent/ollama-defaults"
-target_dir_ollama="$script_dir/volumes/ollama/"
+target_dir_ollama="$script_dir/volumes/ollama"
 
 # Create target directory
 mkdir -p "$target_dir_ollama"
 
 # Copy files from src to target only if they don't already exist
-if [ -n "$FORCE_OLLAMA_INIT" ] || [ -e "$target_dir_ollama/modelfiles" ]; then
+if [ -n "$force_ollama_init" ] || [ ! -e "$target_dir_ollama/modelfiles" ]; then
   echo "Copying modelfiles..."
   cp "$src_dir_ollama/modelfiles" "$target_dir_ollama/" -r
 fi
-for f in "$src_dir_ollama"/*.sh; do
-  if [ -n "$FORCE_OLLAMA_INIT" ] || [ -e "$target_dir_ollama/$(basename "$f")" ]; then
+for f in $(ls "$src_dir_ollama"/*.sh); do
+  if [ -n "$force_ollama_init" ] || [ ! -e "$target_dir_ollama/$(basename "$f")" ]; then
     echo "Copying '$f'..."
     cp "$f" "$target_dir_ollama/"
   fi
