@@ -12,11 +12,17 @@ services:
     ports:
       - ${OLLAMA_PUBLIC_PORT:-11434}:11434
     environment:
-      - OLLAMA_DEBUG=1
-      - OLLAMA_KEEP_ALIVE=24h
-      - OLLAMA_LOAD_TIMEOUT=60s
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KV_CACHE_TYPE=q8_0
       # reserve bytes of GPU for OS
       - OLLAMA_GPU_OVERHEAD=536870912
+    devices:
+      # needed for podman passthrough of GPU
+      - "nvidia.com/gpu=all"
+    # Disables restrictive labels so the container can access the GPU nodes
+    security_opt:
+      # needed for podman passthrough of GPU
+      - label=disable
     networks:
       - dirtclod-net
     deploy:
