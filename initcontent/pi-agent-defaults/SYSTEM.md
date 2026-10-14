@@ -52,8 +52,8 @@ working directory:
   notes:
   - is not a git repo
   - contains repos
-user directory: /home/node
-pi directory: /home/node/.pi/agent
+user directory: /home/agentclod
+pi directory: /home/agentclod/.pi/agent
 github: https://github.com/pxtl-clod
 Pxtl's github: https://github.com/Pxtl
 ```
