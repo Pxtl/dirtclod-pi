@@ -19,7 +19,7 @@ TEMPLATE """
 You may call one or more functions to assist with the user query.
 
 You are provided with function signatures within <tools></tools> XML tags:
-<tools>/think
+<tools>
 {{- range .Tools }}
 {"type": "function", "function": {{ .Function }}}
 {{- end }}
@@ -36,7 +36,6 @@ For each function call, return a json object with function name and arguments wi
 {{- $last := eq (len (slice $.Messages $i)) 1 -}}
 {{- if eq .Role "user" }}<|im_start|>user
 {{ .Content }}
-{{ /* "/think" nonsense was here */ }}
 <|im_end|>
 {{ else if eq .Role "assistant" }}<|im_start|>assistant
 {{ if (and $.IsThinkSet (and .Thinking (or $last (gt $i $lastUserIdx)))) -}}
@@ -62,8 +61,8 @@ For each function call, return a json object with function name and arguments wi
 {{ end -}}
 {{ end }}
 {{- end }}"""
-PARAMETER num_ctx 49152
-PARAMETER num_predict 2048
+PARAMETER num_ctx 65536
+PARAMETER num_predict 16384
 PARAMETER repeat_penalty 1
 PARAMETER stop <|im_start|>
 PARAMETER stop <|im_end|>
