@@ -11,7 +11,7 @@ guarantees.
 
 ## Usage & Preconditions
 
-The intent is that you can pull down this project, configure your .env file,
+The intent is that you can pull down this project, configure your `.env` file,
 then use `make up` to get a working local-hosted coding agent running in a
 secured container under podman or docker.  The agent starts on docker start, and
 is available in a tmux session so you can tmux disconnect (ctrl+b -> d) and it
@@ -36,12 +36,16 @@ after making that kind of change.
 
 The file `.env.example` can be copied to `.env` file.  The settings are
 documented within this file.  The bare minimum you'll want to change is the
-section that controls the git username and emai
+section that controls the git username and email, and setting the size of your
+VRAM.
 
 ```
 # Git identity - this is a part you must override
 GIT_NAME=user-name-goes-here
 GIT_EMAIL=1234567890+user-name-goes-here@users.noreply.github.com
+
+# VRAM, one of 12GB|16GB|20GB|24GB
+OLLAMA_VRAM=20GB
 ```
 
 ### Podman and Docker

@@ -72,7 +72,7 @@ mkdir -p "$target_dir_ollama"
 
 # Copy files from src to target only if they don't already exist
 if [ -n "$force_ollama_init" ] || [ ! -e "$target_dir_ollama/modelfiles" ]; then
-  echo "Copying modelfiles..."
+  echo "Copying modelfiles from '$src_dir_ollama/modelfiles' to '$target_dir_ollama/'..."
   cp "$src_dir_ollama/modelfiles" "$target_dir_ollama/" -r
 fi
 for f in $(ls "$src_dir_ollama"/*.sh); do

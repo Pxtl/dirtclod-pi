@@ -17,7 +17,8 @@ echo "2. Pulling qwen3.5 as default image if not done already..."
 ollama pull qwen3.5
 
 echo "3. Creating dirtclod models...."
-./create-models.sh
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+./create-models.sh $OLLAMA_VRAM
 
 echo "4. Entering idle mode."
 sleep infinity

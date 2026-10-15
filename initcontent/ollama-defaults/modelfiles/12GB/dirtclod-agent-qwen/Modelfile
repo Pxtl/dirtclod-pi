@@ -12,4 +12,5 @@ PARAMETER repeat_penalty 1.0
 # generally recommended online as good compromise level for qwen3.5.  Raising to
 # 98304 because of depletion.
 
-PARAMETER num_ctx 98304
+PARAMETER num_ctx 65536
+PARAMETER num_predict -1

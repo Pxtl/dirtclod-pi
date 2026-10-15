@@ -47,7 +47,7 @@ For each function call, return a json object with function name and arguments wi
 {{ end }}</tool_call>
 {{- end }}{{ if not $last }}<|im_end|>
 {{ end }}
-{{- else if eq .Role "tool" }}<|im_start|>user
+{{- else if eq .Role "tool" }}<|im_start|>tool
 <tool_response>
 {{ .Content }}
 </tool_response><|im_end|>
@@ -62,7 +62,7 @@ For each function call, return a json object with function name and arguments wi
 {{ end }}
 {{- end }}"""
 PARAMETER num_ctx 65536
-PARAMETER num_predict 16384
+PARAMETER num_predict -1
 PARAMETER repeat_penalty 1
 PARAMETER stop <|im_start|>
 PARAMETER stop <|im_end|>
@@ -267,4 +267,3 @@ LICENSE """                                 Apache License
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License."""
-
