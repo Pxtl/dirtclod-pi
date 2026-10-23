@@ -28,6 +28,13 @@ build: init-volumes
 # Start the full stack (ensures network and builds agent first)
 up: build
 	@echo "Starting stack with docker compose"
+	@echo ""
+	@echo "NOTE: on first run the llama.cpp servers download their models into"
+	@echo "      volumes/llama BEFORE the API comes up (agent model is ~14GB)."
+	@echo "      'podman ps' will show llama-agent as (health: starting) until"
+	@echo "      the download finishes - follow progress with:"
+	@echo "        podman logs -f dirtclod-llama-agent"
+	@echo ""
 	docker compose up -d --remove-orphans
 	@bash ./init-pi-ssh.sh
 
