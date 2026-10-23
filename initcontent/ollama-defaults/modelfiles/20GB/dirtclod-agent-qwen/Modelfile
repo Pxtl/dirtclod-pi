@@ -45,7 +45,7 @@ For each function call, return a json object with function name and arguments wi
 {{ end }}</tool_call>
 {{- end }}{{ if not $last }}<|im_end|>
 {{ end }}
-{{- else if eq .Role "tool" }}<|im_start|>tool
+{{- else if eq .Role "tool" }}<|im_start|>user
 <tool_response>
 {{ .Content }}
 </tool_response><|im_end|>
@@ -61,8 +61,9 @@ For each function call, return a json object with function name and arguments wi
 {{- end }}
 """
 
-# commented-out by Pxtl should this really be treating a start as a stop?
-# PARAMETER stop <|im_start|>
+# Qwen3 native stop: also stop if the model starts hallucinating a new turn
+# (<|im_start|>user/assistant) instead of ending its reply.
+PARAMETER stop <|im_start|>
 PARAMETER stop <|im_end|>
 
 # main config
