@@ -1,3 +1,4 @@
 # Docker local things
 .env
 volumes/
+MEMORY.md

@@ -1,22 +1,29 @@
 services:
-  ollama:
-    volumes:
-      - ./volumes/ollama:/root/.ollama
-    entrypoint: ["/root/.ollama/entrypoint.sh"]
-    command: []
-    container_name: dirtclod-ollama
+  llama-agent:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: dirtclod-llama-agent
     pull_policy: always
-    tty: true
     restart: unless-stopped
-    image: docker.io/ollama/ollama:latest
-    ports:
-      - ${OLLAMA_PUBLIC_PORT:-11434}:11434
+    tty: true
+    volumes:
+      - ./volumes/llama:/models
     environment:
-      - OLLAMA_FLASH_ATTENTION=1
-      - OLLAMA_KV_CACHE_TYPE=q8_0
-      # reserve bytes of GPU for OS
-      - OLLAMA_GPU_OVERHEAD=536870912
-      - OLLAMA_VRAM=${OLLAMA_VRAM:-12GB}
+      # Where -hf downloads are cached (persisted in ./volumes/llama)
+      - LLAMA_CACHE=/models
+      - HF_TOKEN=${HF_TOKEN:-}
+      # HuggingFace repo:quant for the agent model. Pick per your VRAM, see
+      # .env.example.  llama.cpp default quant is Q4_K_M.
+      - LLAMA_ARG_HF_REPO=${LLM_AGENT_HF_REPO:-VladimirGav/qwen3.8-27B-14GB-IQ4:IQ4}
+      - LLAMA_ARG_CTX_SIZE=${LLM_AGENT_CTX:-65536}
+      - LLAMA_ARG_N_GPU_LAYERS=all
+      - LLAMA_ARG_FLASH_ATTN=on
+      # q8_0 KV cache halves KV memory, same as the old OLLAMA_KV_CACHE_TYPE
+      - LLAMA_ARG_CACHE_TYPE_K=q8_0
+      - LLAMA_ARG_CACHE_TYPE_V=q8_0
+      - LLAMA_ARG_HOST=0.0.0.0
+      - LLAMA_ARG_PORT=8080
+    ports:
+      - ${LLAMA_AGENT_PUBLIC_PORT:-9090}:8080
     devices:
       # needed for podman passthrough of GPU
       - "nvidia.com/gpu=all"
@@ -31,20 +38,51 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: all 
+              count: all
               capabilities: [gpu]
         limits:
           memory: 24G
 
-  ollama-webui:
+  llama-autocomplete:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: dirtclod-llama-autocomplete
+    pull_policy: always
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./volumes/llama:/models
+    environment:
+      - LLAMA_CACHE=/models
+      - HF_TOKEN=${HF_TOKEN:-}
+      - LLAMA_ARG_HF_REPO=${LLM_AUTOCOMPLETE_HF_REPO:-Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M}
+      - LLAMA_ARG_CTX_SIZE=8192
+      - LLAMA_ARG_N_GPU_LAYERS=all
+      - LLAMA_ARG_FLASH_ATTN=on
+      - LLAMA_ARG_HOST=0.0.0.0
+      - LLAMA_ARG_PORT=8081
+    ports:
+      - ${LLAMA_AUTOCOMPLETE_PUBLIC_PORT:-8081}:8081
+    devices:
+      - "nvidia.com/gpu=all"
+    security_opt:
+      - label=disable
+    networks:
+      - dirtclod-net
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+  webui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: dirtclod-ollama-webui
+    container_name: dirtclod-webui
     depends_on:
-      - ollama
+      - llama-agent
     ports:
       - 8080:8080
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OLLAMA_BASE_URLS=http://host.docker.internal:${OLLAMA_PUBLIC_PORT:-11434} # comma separated ollama hosts
+      - OPENAI_API_BASE_URL=http://llama-agent:8080/v1
+      - OPENAI_API_KEY=sk-dirtclod-local
+      - ENABLE_PERSISTENT_CONFIG=${ENABLE_PERSISTENT_CONFIG:-false}
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
@@ -83,6 +121,7 @@ services:
     container_name: dirtclod-pi
     depends_on:
       - sshitmaids
+      - llama-agent
     tty: true
     stdin_open: true
     environment:
