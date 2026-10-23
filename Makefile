@@ -29,11 +29,11 @@ build: init-volumes
 up: build
 	@echo "Starting stack with docker compose"
 	@echo ""
-	@echo "NOTE: on first run the llama.cpp servers download their models into"
-	@echo "      volumes/llama BEFORE the API comes up (agent model is ~14GB)."
-	@echo "      'podman ps' will show llama-agent as (health: starting) until"
-	@echo "      the download finishes - follow progress with:"
-	@echo "        podman logs -f dirtclod-llama-agent"
+	@echo "NOTE: on first run the llama.cpp router downloads the models listed"
+	@echo "      in volumes/llama/models.ini BEFORE anything is served (~38GB"
+	@echo "      total the first time).  'podman ps' will show dirtclod-llama as"
+	@echo "      (health: starting) until downloads finish - follow progress:"
+	@echo "        podman logs -f dirtclod-llama"
 	@echo ""
 	docker compose up -d --remove-orphans
 	@bash ./init-pi-ssh.sh

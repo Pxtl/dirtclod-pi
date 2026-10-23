@@ -1,7 +1,7 @@
 {
  "providers": {
   "llama-cpp": {
-   "baseUrl": "http://llama-agent:8080/v1",
+   "baseUrl": "http://llama:8080/v1",
    "api": "openai-completions",
    "apiKey": "llama",
    "compat": {
@@ -24,14 +24,12 @@
       "xhigh": "xhigh",
       "max": null
      }
-    }
-   ]
-  },
-  "llama-cpp-autocomplete": {
-   "baseUrl": "http://llama-autocomplete:8081/v1",
-   "api": "openai-completions",
-   "apiKey": "llama",
-   "models": [
+    },
+    {
+     "id": "dirtclod-north-mini-code",
+     "contextWindow": 65536,
+     "maxTokens": 32768
+    },
     {
      "id": "dirtclod-autocomplete-qwen",
      "contextWindow": 8192,

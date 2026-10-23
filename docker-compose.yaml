@@ -1,50 +1,37 @@
 services:
-  llama-agent:
+  llama:
     image: ghcr.io/ggml-org/llama.cpp:server-cuda
-    container_name: dirtclod-llama-agent
+    container_name: dirtclod-llama
     pull_policy: always
     restart: unless-stopped
     tty: true
     volumes:
       - ./volumes/llama:/models
     environment:
-      # Where -hf downloads are cached (persisted in ./volumes/llama)
+      # Where -hf downloads are cached and where the models preset lives
       - LLAMA_CACHE=/models
       - HF_TOKEN=${HF_TOKEN:-}
-      # HuggingFace repo:quant for the agent model. Pick per your VRAM, see
-      # .env.example.  llama.cpp default quant is Q4_K_M.
-      - LLAMA_ARG_HF_REPO=${LLM_AGENT_HF_REPO:-unsloth/Qwen3.8-27B-GGUF}
-      # exact gguf filename in the repo (UD-* quants don't match plain quant tags)
-      - LLAMA_ARG_HF_FILE=${LLM_AGENT_HF_FILE:-Qwen3.8-27B-UD-IQ4_XS.gguf}
-      - LLAMA_ARG_CTX_SIZE=${LLM_AGENT_CTX:-65536}
-      # auto: fit layers to free VRAM, offloading the rest to CPU if tight
-      # ("all" disables this and hard-OOMs the KV cache when VRAM is short)
-      - LLAMA_ARG_N_GPU_LAYERS=auto
-      - LLAMA_ARG_FLASH_ATTN=on
-      # multi-GPU hosts: which CUDA device(s) the agent server may use.
-      # Check `nvidia-smi` - pick the card with free VRAM (your desktop GPU
+      # multi-GPU hosts: which CUDA device(s) the server may use.  Check
+      # `nvidia-smi` - pick the card with free VRAM (your desktop GPU
       # reserves ~1GB).  Comma-separate to use several (e.g. "0,1").
       - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0}
-      # q8_0 KV cache halves KV memory, same as the old OLLAMA_KV_CACHE_TYPE
-      - LLAMA_ARG_CACHE_TYPE_K=q8_0
-      - LLAMA_ARG_CACHE_TYPE_V=q8_0
       - LLAMA_ARG_HOST=0.0.0.0
       - LLAMA_ARG_PORT=8080
-    # text-only coding agent: skip the multimodal projector (saves ~1GB VRAM
-    # and the mmproj download).  Appended to the image ENTRYPOINT llama-server.
-    command: ["--no-mmproj"]
+    # Router mode: no model on the command line; models come from the preset
+    # ini (editable in volumes/llama/models.ini without rebuilding).  The
+    # router loads/unloads model instances per request; sleeping models
+    # auto-reload.  /health, /props, /models, /metrics never wake a sleeper.
+    command: ["--models-preset", "/models/models.ini", "--sleep-idle-seconds", "300"]
     ports:
-      - ${LLAMA_AGENT_PUBLIC_PORT:-9090}:8080
-    # don't trust this status until it turns healthy: during the first run the
-    # -hf model download runs before the HTTP listener binds, so /health is
-    # unreachable.  start_period keeps that phase "starting" instead of
-    # "unhealthy"; with the model cached, healthy arrives in ~30s.
+      - ${LLAMA_PUBLIC_PORT:-9090}:8080
+    # don't trust this status until it turns healthy: the first run downloads
+    # models (~38GB total across the three) before instances can serve.
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 60m
+      start_period: 120m
     devices:
       # needed for podman passthrough of GPU
       - "nvidia.com/gpu=all"
@@ -62,53 +49,18 @@ services:
               count: all
               capabilities: [gpu]
         limits:
-          memory: 24G
+          # generous: the MoE model keeps ~23GB of expert weights in system RAM
+          memory: 48G
 
-  llama-autocomplete:
-    image: ghcr.io/ggml-org/llama.cpp:server-cuda
-    container_name: dirtclod-llama-autocomplete
-    pull_policy: always
-    restart: unless-stopped
-    tty: true
-    volumes:
-      - ./volumes/llama:/models
-    environment:
-      - LLAMA_CACHE=/models
-      - HF_TOKEN=${HF_TOKEN:-}
-      - LLAMA_ARG_HF_REPO=${LLM_AUTOCOMPLETE_HF_REPO:-Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M}
-      - LLAMA_ARG_CTX_SIZE=8192
-      - LLAMA_ARG_N_GPU_LAYERS=auto
-      - LLAMA_ARG_FLASH_ATTN=on
-      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0}
-      - LLAMA_ARG_HOST=0.0.0.0
-      - LLAMA_ARG_PORT=8081
-    ports:
-      - ${LLAMA_AUTOCOMPLETE_PUBLIC_PORT:-8081}:8081
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10m
-    devices:
-      - "nvidia.com/gpu=all"
-    security_opt:
-      - label=disable
-    networks:
-      - dirtclod-net
-    deploy:
-      resources:
-        limits:
-          memory: 4G
   webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: dirtclod-webui
     depends_on:
-      - llama-agent
+      - llama
     ports:
       - 8080:8080
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OPENAI_API_BASE_URL=http://llama-agent:8080/v1
+      - OPENAI_API_BASE_URL=http://llama:8080/v1
       - OPENAI_API_KEY=sk-dirtclod-local
       - ENABLE_PERSISTENT_CONFIG=${ENABLE_PERSISTENT_CONFIG:-false}
       - ENV=dev
@@ -149,7 +101,7 @@ services:
     container_name: dirtclod-pi
     depends_on:
       - sshitmaids
-      - llama-agent
+      - llama
     tty: true
     stdin_open: true
     environment:

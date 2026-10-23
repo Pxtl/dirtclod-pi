@@ -66,5 +66,8 @@ fi
 
 echo "Setting up llama.cpp volume"
 mkdir -p "$script_dir/volumes/llama"
+if [ ! -e "$script_dir/volumes/llama/models.ini" ]; then
+  cp "$script_dir/initcontent/llama-defaults/models.ini" "$script_dir/volumes/llama/models.ini"
+fi
 
 echo "Defaults deployed."

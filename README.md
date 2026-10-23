@@ -76,9 +76,11 @@ into the volumes.
 
 ## Components
 
-### llama.cpp servers
-Run as containers "dirtclod-llama-agent" (service "llama-agent") and
-"dirtclod-llama-autocomplete" (service "llama-autocomplete").
+### llama.cpp router
+Runs as container "dirtclod-llama" (service "llama") - a single
+`llama-server` in router mode serving all models on one port, loading and
+unloading model instances on demand.  Models idle for 5 minutes sleep
+(unloaded from VRAM/RAM) and auto-reload on the next request.
 
 The stack uses llama.cpp's `llama-server` for local LLM hosting.  Unlike
 Ollama, it uses each GGUF's embedded chat template, which fixes several
@@ -87,20 +89,19 @@ agentic bugs seen with Ollama 0.40.x (garbled tool schemas from Modelfile
 `chat_template_kwargs`).
 
 #### Configuration
-Models are selected by `.env` vars (`LLM_AGENT_HF_REPO`,
-`LLM_AUTOCOMPLETE_HF_REPO`) as HuggingFace `repo:quant` refs; llama-server
-downloads and caches them under `./volumes/llama`.  Sampling defaults are now
-per-request (pi-side) rather than baked into Modelfiles.
+Models are defined in the router preset `./volumes/llama/models.ini`
+(seeded from `initcontent/llama-defaults/`).  Each section names a model
+(and its id as served on `/v1/models`), HF repo/file, and per-model args.
+Edit and restart to swap quants or add models.  Default trio, sized for a
+19GB-VRAM budget:
 
-Within the `dirtclod-net` network the agent server is on
-`llama-agent:8080`, autocomplete on `llama-autocomplete:8081`.  On the host
-they bind to `LLAMA_AGENT_PUBLIC_PORT` (default 9090) and
-`LLAMA_AUTOCOMPLETE_PUBLIC_PORT` (default 8081).
+- `dirtclod-agent-qwen`: Qwen3.8-27B UD-IQ4_XS (14.3GB, full GPU)
+- `dirtclod-north-mini-code`: North-Mini-Code-1.0 UD-Q5_K_M (MoE - expert
+  weights stay in system RAM via `n-cpu-moe`; ~5GB VRAM-resident)
+- `dirtclod-autocomplete-qwen`: Qwen2.5-Coder-1.5B (always resident)
 
-Note: each llama-server instance serves exactly one model.  The previous
-alternate agent model (`dirtclod-agent-north-mini-code`) can be served by
-pointing `LLM_AGENT_HF_REPO` at its GGUF repo and updating the pi
-models.json entry accordingly.
+Within the `dirtclod-net` network the router is on `llama:8080`; on the
+host it binds to `LLAMA_PUBLIC_PORT` (default 9090).
 
 ### pi-coding-agent
 Runs container "dirtclod-pi" for service "pi-coding-agent"
