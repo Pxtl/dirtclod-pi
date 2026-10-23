@@ -1,6 +1,6 @@
 # Makefile for dirtclod-pi docker
 
-.PHONY: help init-submodules build-pi-agent build init-volumes force-init-volumes up down clean
+.PHONY: help build-pi-agent build init-volumes force-init-volumes up down clean
 .DEFAULT_GOAL := build
 
 # Use this project name for tagging/pushing images
@@ -16,13 +16,10 @@ endif
 help:
 	@echo "usage: make [target]"
 
-init-submodules:
-	git submodule update --init --recursive
-
-init-volumes: init-submodules
+init-volumes:
 	@bash ./init-volumes.sh
 
-force-init-volumes: init-submodules
+force-init-volumes:
 	@bash ./init-volumes.sh -f
 
 build: init-volumes
