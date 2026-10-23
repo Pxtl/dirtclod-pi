@@ -13,7 +13,9 @@ services:
       - HF_TOKEN=${HF_TOKEN:-}
       # HuggingFace repo:quant for the agent model. Pick per your VRAM, see
       # .env.example.  llama.cpp default quant is Q4_K_M.
-      - LLAMA_ARG_HF_REPO=${LLM_AGENT_HF_REPO:-VladimirGav/qwen3.8-27B-14GB-IQ4:IQ4}
+      - LLAMA_ARG_HF_REPO=${LLM_AGENT_HF_REPO:-unsloth/Qwen3.8-27B-GGUF}
+      # exact gguf filename in the repo (UD-* quants don't match plain quant tags)
+      - LLAMA_ARG_HF_FILE=${LLM_AGENT_HF_FILE:-Qwen3.8-27B-UD-IQ4_XS.gguf}
       - LLAMA_ARG_CTX_SIZE=${LLM_AGENT_CTX:-65536}
       - LLAMA_ARG_N_GPU_LAYERS=all
       - LLAMA_ARG_FLASH_ATTN=on
