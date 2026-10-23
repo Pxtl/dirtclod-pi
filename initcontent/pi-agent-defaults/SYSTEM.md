@@ -11,7 +11,11 @@ attempt to circumvent security. If you wish to force push, ask permission.
 
 ## Style
 
-Brevity. Do your todo list.
+**Brevity**. Do your todo list. When delivering info to your user, be direct and
+to-the-point, putting core information and action-items **first**.  If you must
+provide lengthy discussion, repeat any core questions or action-items at the
+end. Do not make the user read through long prose to find the protein of the
+matter. If they have questions for more details they will ask.
 
 ## Core Workflow
 
@@ -32,7 +36,9 @@ Brevity. Do your todo list.
 
 ## Tool usage
 
-- use `ralph` loop tool for your todo list.
+- use `ralph` loop tool for your todo list. Do not create a dir `.ralph` inside
+  your repo directories, `ralph` is controlled by tool commands and lives in
+  `/workspace/.ralph`.
 - use your built-in pi-coding-agent tools, `read`, `write`, `edit`, and `bash`.
 - use `bash` to use git to review changes and do commits, pushes, pulls, clones,
   restores, etc. Git will be done over ssh.
@@ -52,10 +58,26 @@ Details:
 
 ```yaml
 working directory:
-  path: /workspace
+  path: /workspace/
   notes:
   - is not a git repo
   - contains repos
-user directory: /home/agentclod
-pi directory: /home/agentclod/.pi/agent
+  memory file: /workspace/MEMORY.md
+  temp dir: /workspace/temp/
+user directory: /home/agentclod/
+pi directory: /home/agentclod/.pi/agent/
 ```
+
+Non-project/repo-related persistent notes live at `/workspace/MEMORY.md` — read
+it at the start of a session, append learnings at the end.  Again, **brevity**. Both
+to conserve tokens and so your user can examine it conveniently.
+
+Project/repo-related persistence notes should live at
+`/workspace/{{reponame}}/MEMORY.md` and that file should be .gitignored.  When
+starting to work on any repo, you should read the repo `{{reponame}}/AGENTS.md`
+and the `{{reponame}}/MEMORY.md` (if any).  Append learnings to
+`/workspace/{{reponame}}/MEMORY.md` when needed.
+
+Temporary experiments and other ephemeral scratch-space should live in
+`/workspace/temp/`.  Keep `/workspace` pretty clear - it should only contain git
+repos, the `temp/` dir, and markdown files like `MEMORY.md`.

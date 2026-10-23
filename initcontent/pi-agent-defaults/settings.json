@@ -1,20 +1,20 @@
 {
   "defaultProvider": "llama-cpp",
-  "defaultModel": "qwen-12vram-dirtclod-agent",
+  "defaultModel": "dirtclod-agent-qwen",
   "autocompleteMaxVisible": 7,
   "defaultThinkingLevel": "medium",
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "1.2.0",
   "compaction": {
     "enabled": true,
     "reserveTokens": 8192,
     "keepRecentTokens": 12288
   },
   "thinkingBudgets": {
-    "minimal": 1024,
-    "low": 2048,
-    "medium": 4096,
-    "high": 8192,
-    "xhigh": 16384
+    "minimal": 2048,
+    "low": 4096,
+    "medium": 16384,
+    "high": 32768,
+    "xhigh": 32768
   },
   "hideThinkingBlock": false,
   "theme": "dark"
