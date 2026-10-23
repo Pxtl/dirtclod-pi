@@ -11,10 +11,11 @@ services:
       # Where -hf downloads are cached and where the models preset lives
       - LLAMA_CACHE=/models
       - HF_TOKEN=${HF_TOKEN:-}
-      # multi-GPU hosts: which CUDA device(s) the server may use.  Check
-      # `nvidia-smi` - pick the card with free VRAM (your desktop GPU
-      # reserves ~1GB).  Comma-separate to use several (e.g. "0,1").
-      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0}
+      # multi-GPU hosts: which CUDA device(s) the server may use.  The
+      # default uses both cards (llama.cpp splits across them and n-gpu-layers
+      # auto balances per-card free memory).  Set e.g. "0" to pin to one card
+      # (single-card pin + tight VRAM => layers dump to CPU => very slow).
+      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0,1}
       - LLAMA_ARG_HOST=0.0.0.0
       - LLAMA_ARG_PORT=8080
     # Router mode: no model on the command line; models come from the preset

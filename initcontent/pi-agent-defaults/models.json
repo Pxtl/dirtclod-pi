@@ -10,8 +10,8 @@
    "models": [
     {
      "id": "dirtclod-agent-qwen",
-     "contextWindow": 65536,
-     "maxTokens": 32768,
+     "contextWindow": 32768,
+     "maxTokens": 16384,
      "reasoning": true,
      "compat": {
       "thinkingFormat": "qwen-chat-template"
