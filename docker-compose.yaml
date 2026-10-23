@@ -17,8 +17,14 @@ services:
       # exact gguf filename in the repo (UD-* quants don't match plain quant tags)
       - LLAMA_ARG_HF_FILE=${LLM_AGENT_HF_FILE:-Qwen3.8-27B-UD-IQ4_XS.gguf}
       - LLAMA_ARG_CTX_SIZE=${LLM_AGENT_CTX:-65536}
-      - LLAMA_ARG_N_GPU_LAYERS=all
+      # auto: fit layers to free VRAM, offloading the rest to CPU if tight
+      # ("all" disables this and hard-OOMs the KV cache when VRAM is short)
+      - LLAMA_ARG_N_GPU_LAYERS=auto
       - LLAMA_ARG_FLASH_ATTN=on
+      # multi-GPU hosts: which CUDA device(s) the agent server may use.
+      # Check `nvidia-smi` - pick the card with free VRAM (your desktop GPU
+      # reserves ~1GB).  Comma-separate to use several (e.g. "0,1").
+      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0}
       # q8_0 KV cache halves KV memory, same as the old OLLAMA_KV_CACHE_TYPE
       - LLAMA_ARG_CACHE_TYPE_K=q8_0
       - LLAMA_ARG_CACHE_TYPE_V=q8_0
@@ -71,8 +77,9 @@ services:
       - HF_TOKEN=${HF_TOKEN:-}
       - LLAMA_ARG_HF_REPO=${LLM_AUTOCOMPLETE_HF_REPO:-Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M}
       - LLAMA_ARG_CTX_SIZE=8192
-      - LLAMA_ARG_N_GPU_LAYERS=all
+      - LLAMA_ARG_N_GPU_LAYERS=auto
       - LLAMA_ARG_FLASH_ATTN=on
+      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0}
       - LLAMA_ARG_HOST=0.0.0.0
       - LLAMA_ARG_PORT=8081
     ports:
