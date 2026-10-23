@@ -47,7 +47,7 @@ For each function call, return a json object with function name and arguments wi
 {{ end }}</tool_call>
 {{- end }}{{ if not $last }}<|im_end|>
 {{ end }}
-{{- else if eq .Role "tool" }}<|im_start|>tool
+{{- else if eq .Role "tool" }}<|im_start|>user
 <tool_response>
 {{ .Content }}
 </tool_response><|im_end|>
@@ -65,7 +65,6 @@ PARAMETER num_ctx 65536
 PARAMETER num_predict -1
 PARAMETER repeat_penalty 1
 PARAMETER stop <|im_start|>
-PARAMETER stop <|im_end|>
 PARAMETER stop <|im_end|>
 PARAMETER temperature 0.6
 PARAMETER top_k 20
