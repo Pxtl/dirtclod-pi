@@ -15,20 +15,20 @@ services:
       # default uses both cards (llama.cpp splits across them and n-gpu-layers
       # auto balances per-card free memory).  Set e.g. "0" to pin to one card
       # (single-card pin + tight VRAM => layers dump to CPU => very slow).
-      - CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES:-0,1}
+      # to restrict to specific cards (e.g. "0" or "1"), add:
+      # CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES}
       - LLAMA_ARG_HOST=0.0.0.0
-      - LLAMA_ARG_PORT=8080
     # Router mode: no model on the command line; models come from the preset
     # ini (editable in volumes/llama/models.ini without rebuilding).  The
     # router loads/unloads model instances per request; sleeping models
     # auto-reload.  /health, /props, /models, /metrics never wake a sleeper.
     command: ["--models-preset", "/models/models.ini", "--sleep-idle-seconds", "300"]
     ports:
-      - ${LLAMA_PUBLIC_PORT:-9090}:8080
+      - ${LLAMA_PUBLIC_PORT:-9090}:9931
     # don't trust this status until it turns healthy: the first run downloads
     # models (~38GB total across the three) before instances can serve.
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9931/health"]
       interval: 30s
       timeout: 5s
       retries: 3

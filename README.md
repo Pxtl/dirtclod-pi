@@ -82,11 +82,11 @@ Runs as container "dirtclod-llama" (service "llama") - a single
 unloading model instances on demand.  Models idle for 5 minutes sleep
 (unloaded from VRAM/RAM) and auto-reload on the next request.
 
-The stack uses llama.cpp's `llama-server` for local LLM hosting.  Unlike
-Ollama, it uses each GGUF's embedded chat template, which fixes several
-agentic bugs seen with Ollama 0.40.x (garbled tool schemas from Modelfile
-`{{ .Function }}`, think+tools early turn-ending, ignored
-`chat_template_kwargs`).
+Originally this stack used Ollama, but Ollama 0.40.x had agentic bugs with
+Qwen thinking models - garbled tool schemas from Modelfile `{{ .Function }}`,
+early turn-ending on think+tools requests, and silently ignored thinking
+kwargs - so it was replaced with `llama-server`, which uses each GGUF's
+embedded chat template.
 
 #### Configuration
 Models are defined in the router preset `./volumes/llama/models.ini`
@@ -100,8 +100,9 @@ Edit and restart to swap quants or add models.  Default trio, sized for a
   weights stay in system RAM via `n-cpu-moe`; ~5GB VRAM-resident)
 - `dirtclod-autocomplete-qwen`: Qwen2.5-Coder-1.5B (always resident)
 
-Within the `dirtclod-net` network the router is on `llama:8080`; on the
-host it binds to `LLAMA_PUBLIC_PORT` (default 9090).
+Within the `dirtclod-net` network the router is on `llama:9931`
+(llama-server's default port); on the host it binds to `LLAMA_PUBLIC_PORT`
+(default 9090).
 
 ### pi-coding-agent
 Runs container "dirtclod-pi" for service "pi-coding-agent"

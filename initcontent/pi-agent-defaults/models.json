@@ -1,7 +1,7 @@
 {
  "providers": {
   "llama-cpp": {
-   "baseUrl": "http://llama:8080/v1",
+   "baseUrl": "http://llama:9931/v1",
    "api": "openai-completions",
    "apiKey": "llama",
    "compat": {
@@ -27,7 +27,7 @@
     },
     {
      "id": "dirtclod-north-mini-code",
-     "contextWindow": 65536,
+     "contextWindow": 98304,
      "maxTokens": 32768
     },
     {

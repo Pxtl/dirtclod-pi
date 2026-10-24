@@ -3,28 +3,13 @@ set -euo pipefail
 
 # Deploy the standard config values into the pi-coding-agent volume and create
 # the llama.cpp volume.  Pi init only copies files that don't already exist.
-# (The -f flag is retained for compatibility with older Makefiles; llama.cpp
-# needs no per-model init content, so it is now a no-op.)
 #
-# Usage: ./init-volumes.sh [-f]
+# Usage: ./init-volumes.sh
 
 # Resolve script directory
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 AGENT_GID="${AGENT_GID:-1000}"   # the gid used by `user:` in docker-compose.yaml
-
-print_usage() {
-  printf "Usage: ./init-volumes.sh [-f]"
-}
-
-force_ollama_init=''
-while getopts 'f' flag; do
-  case "${flag}" in
-    f) force_ollama_init='true' ;;
-    *) print_usage
-       exit 1 ;;
-  esac
-done
 
 # check if we're running an unsupported configuration.
 if ls /run/user/*/docker.sock >/dev/null 2>&1; then

@@ -36,8 +36,8 @@ if [[ $is_rootless_podman == "true" ]] && { [[ -n "$force_ssh_init" ]] || [[ ! -
     echo "restricting ssh key permissions (ssh rejects group-writable keys)..."
     # ssh hard-fails on group/other-writable private keys; the source volume may
     # have been created under umask 002, so normalize modes explicitly.
-    chmod 600 "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519"
-    chmod 644 "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519.pub" \
+    chmod u=rw,go-rwx "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519"
+    chmod u=rw,go=r "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519.pub" \
               "$script_dir/volumes/pi-coding-agent/.ssh/known_hosts" \
               "$script_dir/volumes/pi-coding-agent/.ssh/config"
     echo "transferring ownership to agent clod..."

@@ -19,8 +19,7 @@ help:
 init-volumes:
 	@bash ./init-volumes.sh
 
-force-init-volumes:
-	@bash ./init-volumes.sh -f
+force-init-volumes: init-volumes
 
 build: init-volumes
 	docker compose build
