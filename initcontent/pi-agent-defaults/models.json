@@ -1,44 +1,41 @@
 {
-  "providers": {
-    "llama-cpp": {
-      "baseUrl": "http://ollama:11434/v1",
-      "api": "openai-completions",
-      "apiKey": "ollama",
-      "compat": {
-        "supportsReasoningEffort": true
-      },
-      "models": [
-        { 
-          "id": "qwen3.5"
-        },
-        {
-          "id": "dirtclod-agent-north-mini-code",
-          "contextWindow": 98304,
-          "maxTokens": 32768
-        },
-        { 
-          "id": "dirtclod-autocomplete-qwen",
-          "contextWindow": 8192,
-          "maxTokens": 2048
-        },
-        { 
-          "id": "dirtclod-agent-qwen",
-          "contextWindow": 65536,
-          "maxTokens": 32768,
-          "reasoning": true,
-          "compat": {
-            "thinkingFormat": "qwen-chat-template"
-          },
-          "thinkingLevelMap": {
-            "minimal": null,
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh",
-            "max": null
-          }
-        }
-      ]
+ "providers": {
+  "llama-cpp": {
+   "baseUrl": "http://llama:9931/v1",
+   "api": "openai-completions",
+   "apiKey": "llama",
+   "compat": {
+    "supportsReasoningEffort": true
+   },
+   "models": [
+    {
+     "id": "dirtclod-agent-qwen",
+     "contextWindow": 57344,
+     "maxTokens": 16384,
+     "reasoning": true,
+     "compat": {
+      "thinkingFormat": "qwen-chat-template"
+     },
+     "thinkingLevelMap": {
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+     }
+    },
+    {
+     "id": "dirtclod-north-mini-code",
+     "contextWindow": 98304,
+     "maxTokens": 32768
+    },
+    {
+     "id": "dirtclod-autocomplete-qwen",
+     "contextWindow": 8192,
+     "maxTokens": 2048
     }
+   ]
   }
+ }
 }

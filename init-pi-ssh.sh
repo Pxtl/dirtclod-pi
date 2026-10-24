@@ -33,6 +33,13 @@ if [[ $is_rootless_podman == "true" ]] && { [[ -n "$force_ssh_init" ]] || [[ ! -
 
     echo "copying ssh-client files from sshitmaids to pi-coding-agent..."
     cp "$script_dir/volumes/ssh-client"/* "$script_dir/volumes/pi-coding-agent/.ssh"
+    echo "restricting ssh key permissions (ssh rejects group-writable keys)..."
+    # ssh hard-fails on group/other-writable private keys; the source volume may
+    # have been created under umask 002, so normalize modes explicitly.
+    chmod u=rw,go-rwx "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519"
+    chmod u=rw,go=r "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519.pub" \
+              "$script_dir/volumes/pi-coding-agent/.ssh/known_hosts" \
+              "$script_dir/volumes/pi-coding-agent/.ssh/config"
     echo "transferring ownership to agent clod..."
     podman unshare chown -R "1000:1000" "$script_dir/volumes/pi-coding-agent/.ssh"/*
     echo "done."

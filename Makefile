@@ -1,6 +1,6 @@
 # Makefile for dirtclod-pi docker
 
-.PHONY: help init-submodules build-pi-agent build init-volumes force-init-volumes up down clean
+.PHONY: help build-pi-agent build init-volumes up down clean
 .DEFAULT_GOAL := build
 
 # Use this project name for tagging/pushing images
@@ -16,14 +16,8 @@ endif
 help:
 	@echo "usage: make [target]"
 
-init-submodules:
-	git submodule update --init --recursive
-
-init-volumes: init-submodules
+init-volumes:
 	@bash ./init-volumes.sh
-
-force-init-volumes: init-submodules
-	@bash ./init-volumes.sh -f
 
 build: init-volumes
 	docker compose build
@@ -31,6 +25,13 @@ build: init-volumes
 # Start the full stack (ensures network and builds agent first)
 up: build
 	@echo "Starting stack with docker compose"
+	@echo ""
+	@echo "NOTE: on first run the llama.cpp router downloads the models listed"
+	@echo "      in volumes/llama/models.ini BEFORE anything is served (~38GB"
+	@echo "      total the first time).  'podman ps' will show dirtclod-llama as"
+	@echo "      (health: starting) until downloads finish - follow progress:"
+	@echo "        podman logs -f dirtclod-llama"
+	@echo ""
 	docker compose up -d --remove-orphans
 	@bash ./init-pi-ssh.sh
 

@@ -1,29 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy the standard config values into pi-coding-agent volume and ollama
-# volume.  Use -f to force ollama init.  Pi init must be done manually because
-# that's more destructive.
+# Deploy the standard config values into the pi-coding-agent volume and create
+# the llama.cpp volume.  Pi init only copies files that don't already exist.
 #
-# Usage: ./init-volumes.sh [-f]
+# Usage: ./init-volumes.sh
 
 # Resolve script directory
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 AGENT_GID="${AGENT_GID:-1000}"   # the gid used by `user:` in docker-compose.yaml
-
-print_usage() {
-  printf "Usage: ./init-volumes.sh [-f]"
-}
-
-force_ollama_init=''
-while getopts 'f' flag; do
-  case "${flag}" in
-    f) force_ollama_init='true' ;;
-    *) print_usage
-       exit 1 ;;
-  esac
-done
 
 # check if we're running an unsupported configuration.
 if ls /run/user/*/docker.sock >/dev/null 2>&1; then
@@ -63,24 +49,10 @@ else
   echo "Not rootless Podman — skipping uid-mapping fix (not needed on Docker)"
 fi
 
-echo "Setting up ollama volume (force_ollama_init = $force_ollama_init)"
-src_dir_ollama="$script_dir/initcontent/ollama-defaults"
-target_dir_ollama="$script_dir/volumes/ollama"
-
-# Create target directory
-mkdir -p "$target_dir_ollama"
-
-# Copy files from src to target only if they don't already exist
-if [ -n "$force_ollama_init" ] || [ ! -e "$target_dir_ollama/modelfiles" ]; then
-  echo "Copying modelfiles from '$src_dir_ollama/modelfiles' to '$target_dir_ollama/'..."
-  cp "$src_dir_ollama/modelfiles" "$target_dir_ollama/" -r
+echo "Setting up llama.cpp volume"
+mkdir -p "$script_dir/volumes/llama"
+if [ ! -e "$script_dir/volumes/llama/models.ini" ]; then
+  cp "$script_dir/initcontent/llama-defaults/models.ini" "$script_dir/volumes/llama/models.ini"
 fi
-for f in $(ls "$src_dir_ollama"/*.sh); do
-  if [ -n "$force_ollama_init" ] || [ ! -e "$target_dir_ollama/$(basename "$f")" ]; then
-    echo "Copying '$f'..."
-    cp "$f" "$target_dir_ollama/"
-  fi
-  chmod +x "$target_dir_ollama/$(basename "$f")"
-done
 
 echo "Defaults deployed."
