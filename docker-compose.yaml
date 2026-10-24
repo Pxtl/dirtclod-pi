@@ -115,6 +115,7 @@ services:
       - GIT_CONFIG_VALUE_0=${GIT_GPG_KEY}
       - GIT_CONFIG_KEY_1=commit.gpgsign
       - GIT_CONFIG_VALUE_1=${GIT_GPG_SIGN:-false}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
       # provider specific API keys, as many as practical included here so user
       # doesn't have to customize the docker-compose.  You can replace all of
       # these with only the ones you actually use
