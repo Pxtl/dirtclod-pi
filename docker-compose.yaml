@@ -24,7 +24,7 @@ services:
     # auto-reload.  /health, /props, /models, /metrics never wake a sleeper.
     command: ["--models-preset", "/models/models.ini", "--sleep-idle-seconds", "300"]
     ports:
-      - ${LLAMA_PUBLIC_PORT:-9090}:9931
+      - ${LLAMA_PUBLIC_PORT:-9931}:9931
     # don't trust this status until it turns healthy: the first run downloads
     # models (~38GB total across the three) before instances can serve.
     healthcheck:

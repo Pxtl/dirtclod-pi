@@ -102,7 +102,7 @@ Edit and restart to swap quants or add models.  Default trio, sized for a
 
 Within the `dirtclod-net` network the router is on `llama:9931`
 (llama-server's default port); on the host it binds to `LLAMA_PUBLIC_PORT`
-(default 9090).
+(default 9931, matching the server default).
 
 ### pi-coding-agent
 Runs container "dirtclod-pi" for service "pi-coding-agent"
