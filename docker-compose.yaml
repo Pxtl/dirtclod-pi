@@ -18,6 +18,9 @@ services:
       # to restrict to specific cards (e.g. "0" or "1"), add:
       # CUDA_VISIBLE_DEVICES=${LLM_AGENT_CUDA_DEVICES}
       - LLAMA_ARG_HOST=0.0.0.0
+      # explicit because older llama.cpp images default to 8080; 9931 is the
+      # newer default.  Keeping this pinned makes the port image-independent.
+      - LLAMA_ARG_PORT=9931
     # Router mode: no model on the command line; models come from the preset
     # ini (editable in volumes/llama/models.ini without rebuilding).  The
     # router loads/unloads model instances per request; sleeping models
