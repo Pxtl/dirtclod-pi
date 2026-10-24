@@ -1,6 +1,6 @@
 # Makefile for dirtclod-pi docker
 
-.PHONY: help build-pi-agent build init-volumes force-init-volumes up down clean
+.PHONY: help build-pi-agent build init-volumes up down clean
 .DEFAULT_GOAL := build
 
 # Use this project name for tagging/pushing images
@@ -18,8 +18,6 @@ help:
 
 init-volumes:
 	@bash ./init-volumes.sh
-
-force-init-volumes: init-volumes
 
 build: init-volumes
 	docker compose build

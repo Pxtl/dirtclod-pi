@@ -68,11 +68,10 @@ Connect to the agent with:
 
 Note that tmux will shut down the agent if you `exit`
 
-While `dirtclod-pi` initializes the agent and llama.cpp servers with expected
+While `dirtclod-pi` initializes the agent and llama.cpp router with expected
 startup config (see `./initcontent`), you are free to customize those afterwards.
-Use the `make force-init-volumes` to re-import the default settings.  Note that
-this will not delete any custom things you have added, just re-copy the files
-into the volumes.
+`make init-volumes` re-imports any default settings files that are still missing
+(it never overwrites files you already have - edit your volume copies directly).
 
 ## Components
 
