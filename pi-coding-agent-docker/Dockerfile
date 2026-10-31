@@ -76,13 +76,13 @@ COPY .tmux.conf /home/agentclod/.tmux.conf
 ENV LANG=en_US.UTF-8
 ENV TERM=xterm-256color
 
-COPY entrypoint-tmux.sh /
-RUN chmod +x /entrypoint-tmux.sh
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 # final prep of userland
 RUN chown -R agentclod:agentclod /home/agentclod
 
 USER agentclod
 
-ENTRYPOINT ["/entrypoint-tmux.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD []
