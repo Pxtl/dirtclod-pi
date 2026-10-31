@@ -17,5 +17,12 @@
     "xhigh": 32768
   },
   "hideThinkingBlock": false,
-  "theme": "dark"
+  "theme": "dark",
+  "packages": [
+    "npm:@tmustier/pi-ralph-wiggum",
+    "npm:@pinet/model-aware-compaction"
+  ],
+  "model-aware-compaction": {
+    "compactionModel": "llama-cpp/dirtclod-agent-qwen:off"
+  }
 }
