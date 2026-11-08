@@ -4,18 +4,22 @@
   "defaultModel": "dirtclod-agent-qwen",
   "autocompleteMaxVisible": 7,
   "defaultThinkingLevel": "medium",
-  "lastChangelogVersion": "1.2.0",
+  // version numbers in this file will need to get periodically backported to
+  // avoid warnings in pi.
+  "lastChangelogVersion": "1.5.0",
   "compaction": {
     "enabled": true,
-    "reserveTokens": 8192,
+    "reserveTokens": 12288,
     "keepRecentTokens": 12288
   },
+  // setting alternate values here just seems to cause truncation.  Hardcode to
+  // match `maxTokens`.
   "thinkingBudgets": {
-    "minimal": 16384,
-    "low": 16384,
-    "medium": 16384,
-    "high": 16384,
-    "xhigh": 16384
+    "minimal": 12288,
+    "low": 12288,
+    "medium": 12288,
+    "high": 12288,
+    "xhigh": 12288
   },
   "hideThinkingBlock": false,
   "theme": "dark",
@@ -26,6 +30,10 @@
   "model-aware-compaction": {
     "compactionModel": "llama-cpp/dirtclod-agent-qwen:off"
   },
-  // 15 minutes
-  "httpIdleTimeoutMs": 900000
+  // 30 minutes.  Compactions can take an *extremely* long time.
+  "httpIdleTimeoutMs": 1800000,
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:@tmustier/pi-ralph-wiggum\",\"scope\":\"user\"}": "0.2.5",
+    "{\"source\":\"npm:@hk_net/pi-thinking-command\",\"scope\":\"user\"}": "0.1.12"
+  }
 }

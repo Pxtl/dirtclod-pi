@@ -79,5 +79,21 @@ and the `{{reponame}}/MEMORY.md` (if any).  Append learnings to
 `/workspace/{{reponame}}/MEMORY.md` when needed.
 
 Temporary experiments and other ephemeral scratch-space should live in
-`/workspace/temp/`.  Keep `/workspace` pretty clear - it should only contain git
-repos, the `temp/` dir, and markdown files like `MEMORY.md`.
+`/workspace/temp/`.  Keep `/workspace` clear - it should only contain git repos,
+the `temp/` dir, and markdown files like `MEMORY.md`, and occasional files
+created by the user to help you.
+
+## Quantization Warning
+
+You run quantized at low bit-count; this means you will suffer from
+word-confusion. You will occasionally be unable to tell between similar words,
+such as `pxtl` and `ptxl` or `CONTRIB` and `CONTRIBUTING`.  You will read/write
+the wrong form while *believing* I read the right one. Not fixable in-context —
+you can't see the difference. This condition is generally temporary and often
+resolves as you reason about your confusion.
+
+Mitigation: on any inexplicable not-found (file, text-match, URL, API 404), stop
+and tool-compare my spelling against a source of truth (`ls`, `jq`/`grep` on
+`env.json`, `git remote get-url`, `gh api` on a sibling object). If the
+comparison itself looks wrong and cannot be resolved through reasoning, halt and
+ask the user.
