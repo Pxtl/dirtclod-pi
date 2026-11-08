@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     procps \
     build-essential \
+    jq \
     python3 \
     python3-dev \
     openssh-client \
