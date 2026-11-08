@@ -34,12 +34,16 @@ if docker info 2>/dev/null | grep -q 'run/user/.*/podman/podman.sock'; then
   echo "Rootless Podman detected — aligning volume ownership with agent identity"
 
   echo "Fixing ownership and permissions under pi_coding_agent ..."
-  podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.config"
-  podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.npm"
-  podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/.pi-data"
-  #not .ssh
-  podman unshare chmod -R g+rwX "$script_dir/volumes/pi-coding-agent"
-  podman unshare find "$script_dir/volumes/pi-coding-agent" -type d -exec chmod g+s {} +
+  # Shared-group fixup for the agent data dirs only. .ssh is deliberately
+  # excluded: SSH requires owner-only key perms; init-pi-ssh.sh manages .ssh.
+  for d in .config .npm .pi-data; do
+    podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/pi-coding-agent/$d"
+    podman unshare chmod -R g+rwX "$script_dir/volumes/pi-coding-agent/$d"
+  done
+  podman unshare find "$script_dir/volumes/pi-coding-agent/.config" \
+    "$script_dir/volumes/pi-coding-agent/.npm" \
+    "$script_dir/volumes/pi-coding-agent/.pi-data" \
+    -type d -exec chmod g+s {} +
 
   echo "Fixing ownership and permissions under workspace ..."
   podman unshare chown -R "$AGENT_GID:$AGENT_GID" "$script_dir/volumes/workspace"

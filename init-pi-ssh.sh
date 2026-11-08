@@ -23,24 +23,34 @@ while getopts 'f' flag; do
   esac
 done
 
-if [[ $is_rootless_podman == "true" ]] && { [[ -n "$force_ssh_init" ]] || [[ ! -f "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519" ]]; }; then
-    echo "deleting old .ssh files from pi-coding-agent..."
-    podman exec -it --user root dirtclod-pi rm -f \
-      /home/agentclod/.ssh/config \
-      /home/agentclod/.ssh/id_ed25519 \
-      /home/agentclod/.ssh/id_ed25519.pub \
-      /home/agentclod/.ssh/known_hosts
+ssh_dir="$script_dir/volumes/pi-coding-agent/.ssh"
 
-    echo "copying ssh-client files from sshitmaids to pi-coding-agent..."
-    cp "$script_dir/volumes/ssh-client"/* "$script_dir/volumes/pi-coding-agent/.ssh"
-    echo "restricting ssh key permissions (ssh rejects group-writable keys)..."
-    # ssh hard-fails on group/other-writable private keys; the source volume may
+if [[ $is_rootless_podman == "true" ]]; then
+    if [[ -n "$force_ssh_init" ]] || [[ ! -f "$ssh_dir/id_ed25519" ]]; then
+        echo "deleting old .ssh files from pi-coding-agent..."
+        podman exec -it --user root dirtclod-pi rm -f \
+          /home/agentclod/.ssh/config \
+          /home/agentclod/.ssh/id_ed25519 \
+          /home/agentclod/.ssh/id_ed25519.pub \
+          /home/agentclod/.ssh/known_hosts
+
+        echo "copying ssh-client files from sshitmaids to pi-coding-agent..."
+        mkdir -p "$ssh_dir"
+        cp "$script_dir/volumes/ssh-client"/* "$ssh_dir"
+    fi
+
+    # Normalize on every run: rebuilds can leave group bits behind, and ssh
+    # hard-fails on group/other-writable private keys. The source volume may
     # have been created under umask 002, so normalize modes explicitly.
-    chmod u=rw,go-rwx "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519"
-    chmod u=rw,go=r "$script_dir/volumes/pi-coding-agent/.ssh/id_ed25519.pub" \
-              "$script_dir/volumes/pi-coding-agent/.ssh/known_hosts" \
-              "$script_dir/volumes/pi-coding-agent/.ssh/config"
+    echo "restricting ssh key permissions (ssh rejects group-writable keys)..."
+    # Normalize modes; explicit g-s because this fs keeps dir setgid even
+    # through chmod 700 (observed: 2775 -> 2700, not 700).
+    chmod u=rwx,go-rwx,g-s "$ssh_dir"
+    chmod 600 "$ssh_dir/id_ed25519"
+    chmod 644 "$ssh_dir/id_ed25519.pub" \
+              "$ssh_dir/known_hosts" \
+              "$ssh_dir/config"
     echo "transferring ownership to agent clod..."
-    podman unshare chown -R "1000:1000" "$script_dir/volumes/pi-coding-agent/.ssh"/*
+    podman unshare chown -R "1000:1000" "$ssh_dir"
     echo "done."
 fi
